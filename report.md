@@ -19,10 +19,10 @@ geometry:
     - footskip=1cm
 mainfont: DejaVu Serif
 monofont: DejaVu Sans Mono
+titlegraphic: thi_logo.eps
 header-includes: |
     \usepackage[onehalfspacing]{setspace}
     \usepackage{parskip}
-    \usepackage[xetex]{graphicx}
 
     \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
     \renewcommand{\sectionmark}[1]{\markboth{\thesection \ #1}{}}
@@ -36,7 +36,7 @@ header-includes: |
 
     \usepackage[headsepline,footsepline]{scrlayer-scrpage}
     \pagestyle{scrheadings}
-    \ihead{\includegraphics[scale=0.3]{thi_logo.eps}}
+    \ihead{\includegraphics[height=2cm]{thi_logo.eps}}
     \chead{}
     \ohead{\leftmark}
     \ifoot{}
@@ -63,6 +63,7 @@ header-includes: |
 - Secrets in Code respect/modules/OneTimeCodeGenerator.class.php:5
 - E-Mail XSS in respect/management/www/authorized/user/index.php:45-47 
 - XSS Frontend bei /app/activated/www/index.php
+    - ![Demonstration of XSS vulnerability.](poc-xss.png "Expertly crafted Rick Roll."){ height=7cm }
 - XSS Backend(?) bei /app/management/www/authorized/answer/index.php
 - CSRF in respect/app/activated/www/api/setLanguage.php (GET-Request mit State-Change)
     - Aber: Mitigations in Chrome & Firefox seit August 2020
