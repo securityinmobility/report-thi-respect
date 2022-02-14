@@ -84,6 +84,8 @@ Durchgeführt wurde ein umfassender Penetration Test der Testinstallation der
 Anwendung (https://respect.thi.de/app/ui), sowie ein Audit des zur Verfügung 
 gestellten Quellcodes in geringem Umfang.
 
+
+
 # Schwachstellen
 
 ## Stored Cross Site Scripting Schwachstelle **Nutzer** \rightarrow{} **Helfer**
@@ -111,6 +113,7 @@ dem bearbeitenden **Helfer** ausführen, in dessen Namen Aktionen tätigen oder
 Daten abrufen.
 
 ### Mögliche Lösung
+Benutzereingaben müssen *stets* gefiltert (sanitized) werden.
 In PHP kann die Funktion `htmlentities` benutzt werden um HTML Code in der
 Nutzereingabe durch entsprechende escape-codes zu erstetzen.
 Idealerweise sollte das schon vor dem ablegen des Textes in der Datenbank
@@ -124,6 +127,8 @@ Schutz gegen HTML Injection.
     - `app/activated/content/www/en/antwort.php:63`
 
 Analog zu Stored Cross Site Scripting Schwachstelle **Nutzer** \rightarrow{} **Helfer**.
+
+
 
 ## Cross Site Request Forgery (CSRF) Schwachstelle
 - Kritikalität: **Niedrig**
@@ -142,11 +147,13 @@ einen GET-Request mit den Authentifizierungsinformationen des Benutzers ohne
 dessen Wissen bzw. Interaktion zu senden.
 
 ### Mögliche Lösung
-Ein guten Schutz bietet bereits das SameSite=Strict Attribut beim Setzen der 
+Ein guten Schutz bietet bereits das `SameSite=Strict` Attribut beim Setzen der 
 Cookies. Dadurch wird der Webbrowser angewiesen, die Cookies ausschließlich bei
 Requests zu übermitteln, deren Ursprung (Origin) die selbe URL hat.
 Daneben sollten GET-Requests keine Zustandsänderungen bewirken, sondern
 stattdessen POST-Requests genutzt werden.
+
+
 
 ## Open Redirects
 - Kritikalität: **Medium**
@@ -171,6 +178,8 @@ Die Applikation nimmt das Ziel einer Weiterleitung bei Erfolg bzw. Fehler über
 einen URL-Parameter entgegen. Ein Angreifer kann den Nutzer durch einen 
 manipulierten Link auf eine beliebige Website weiterleiten, was ggf. vom Nutzer
 nicht bemerkt wird. Dies erhöht das Risiko eines Phishing-Angriffs.
+
+
 
 ### Mögliche Lösung
 Die URLs der Weiterleitung sollten durch die Anwendung statisch vorgegeben 
@@ -206,8 +215,10 @@ Fehlfunktion nachfolgender Komponenten führt.
 Benutzereingaben (inkl. Cookies!) müssen *stets* gefiltert (sanitized) werden.
 Alternativ sollte das Header-Feld (Zeile 61) direkt als Array übergeben werden.
 
+
+
 ## Missing input sanitization in LDAP search string
-- Kritikalität: **Gering**
+- Kritikalität: **Niedrig**
 - Mögliche Auswirkungen: Unbekannt
 - Dateien: 
     - `respect/modules/LDAPService.class.php`
@@ -231,8 +242,35 @@ Schwachstellen in der Authentifizierung führen.
 Benutzereingaben müssen *stets* gefiltert (sanitized) werden. Alternativ wäre 
 eine Authentifizierung über ein zentrales Portal (Stichwort: SAML SSO) geeignet.
 
+
+
+## E-Mail HTML Content-Injection
+- Kritikalität: **Medium**
+- Mögliche Auswirkungen: Ausspähen von **Helfer**innen Daten, Ausbreitung einer Infektion
+- Dateien: 
+    - `management/www/authorized/user/index.php:46`
+
+```php
+$emailMsg .= "Der Benutzer der aktuellen Vertrauensperson '" . $former_user . "' wurde nun durch den Benutzer '" . $new_user . "' ersetzt. Anonyme Meldungen werden künftig an " . $new_user . "@thi.de gesendet.\r\n";
+// [...]
+$es->send($r . "@thi.de", "Respect@THI - Neue Vertrauensperson", $emailMsg);
+```
+
+### Beschreibung
+**Helfer** haben die möglichkeit die Zuständigkeit an einen neuen **Helfer** zu
+deligieren. Hier kann ein Angreifer einen beliebigen Text als neuen **Helfer**
+angeben und so bsp. HTML Code eingeben. Dieser wird dann in die E-Mail Nachricht
+an alle **Helfer** eingefügt.
+
+### Mögliche Lösung
+Benutzereingaben müssen *stets* gefiltert (sanitized) werden.
+In PHP kann die Funktion `htmlentities` benutzt werden um HTML Code in der
+Nutzereingabe durch entsprechende escape-codes zu erstetzen.
+
+
+
 ## Weak Cryptography
-- Kritikalität: **Gering**
+- Kritikalität: **Niedrig**
 - Mögliche Auswirkungen: Unbekannt
 - Dateien:
     - `modules/Token.class.php`
@@ -247,7 +285,7 @@ public function getSignature() { // RETURNS: string
 }
 ```
 
-### Beschreibung:
+### Beschreibung
 Die Anwendung implementiert ein eigenes kryptographisches Verfahren zur 
 Erzeugung der Signaturen für Authentifizierungsinformationen. Das verwendete 
 Verfahren ist potentiell anfällig gegen Length-Extension-Attacks:
@@ -258,6 +296,8 @@ Wert $H(k||m_1||m_2)$ berechnen, d.h. eine gefälschte Signatur erzeugen.
 ### Mögliche Lösung
 Es sollten etablierte Verfahren für Token (JSON Web Token, JWT) bzw. 
 Message Authentification Codes (HMACs) verwendet werden.
+
+
 
 ## Sensitive Data in Code
 - Kritikalität: **Medium**
@@ -274,6 +314,8 @@ werden muss bzw. vor Freigabe aufwendig zensiert werden muss.
 
 ### Mögliche Lösung
 Zugangsdaten sollten über eine Konfiguration getrennt vom Code erfolgen.
+
+
 
 # Zusammenfassung
 Die Anwendung demonstriert eine umfassende Awareness für Security-Anforderungen.
