@@ -44,6 +44,14 @@ header-includes: |
     \ofoot{\thepage}
 
     \providecommand{\versionortoday}{\today}
+
+    \lstset{
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    frame=single,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    }
 ...
 
 # Einführung
@@ -91,7 +99,7 @@ $err = $ms->getMessage($mid, $key, $requestMsg, $responseMsg);
 ```
 
 ### Demonstration
-![Demonstration der XSS Schwachstelle.](poc-xss.png "Expertly crafted Rick Roll."){ height=5cm }
+![Demonstration der XSS Schwachstelle [[1]](https://www.youtube.com/watch?v=dQw4w9WgXcQ).](poc-xss.png "Expertly crafted Rick Roll."){ height=8cm }
 
 ### Beschreibung
 **Nutzer** haben die Möglichkeit ihr Anliegen über ein Freitext-Feld zu

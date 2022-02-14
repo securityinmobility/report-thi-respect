@@ -7,7 +7,19 @@ all: $(MAINDOC).pdf
 	pandoc $< \
 		--from=markdown+smart \
 		--to=pdf \
+		--listings \
+		--number-sections \
+		--pdf-engine=xelatex \
+		--pdf-engine-opt=-shell-escape \
+		--output=$@
+
+%.tex: %.md
+	pandoc $< \
+		--from=markdown+smart \
+		--to=latex \
 		--standalone \
+		--listings \
+		--number-sections \
 		--pdf-engine=xelatex \
 		--pdf-engine-opt=-shell-escape \
 		--output=$@
